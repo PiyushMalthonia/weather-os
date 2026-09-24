@@ -263,7 +263,19 @@ body {
 }
 
 @media (max-width: 650px) {
+    .daily-card {
+    grid-template-columns: 0.8fr 1.5fr 1fr;
+    padding: 14px;
+  }
 
+  .daily-icon {
+    gap: 8px;
+  }
+
+  .daily-icon small {
+    display: none;
+  }
+  
   .sidebar {
     display: none;
   }
@@ -321,4 +333,77 @@ body {
   border-radius: 10px;
   margin-bottom: 20px;
   font-size: 14px;
+}
+
+/* =========================
+   7 Day Forecast
+   ========================= */
+
+.daily-section {
+  margin-top: 35px;
+}
+
+.daily-section h2 {
+  font-size: 20px;
+  margin-bottom: 18px;
+}
+
+.daily-forecast {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.daily-card {
+  background: #ffffff;
+  border: 1px solid #e9edf3;
+  border-radius: 14px;
+  padding: 16px 20px;
+
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  align-items: center;
+
+  transition: 0.2s;
+}
+
+.daily-card:hover {
+  transform: translateX(3px);
+  box-shadow: 0 6px 20px rgba(20, 35, 60, 0.06);
+}
+
+.daily-day p {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.daily-icon {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.daily-icon span {
+  font-size: 28px;
+}
+
+.daily-icon small {
+  color: #8a94a6;
+  font-size: 13px;
+}
+
+.daily-temperature {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 15px;
+}
+
+.daily-temperature strong {
+  font-size: 18px;
+}
+
+.daily-temperature span {
+  color: #9aa3b2;
+  font-size: 16px;
 }

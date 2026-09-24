@@ -309,7 +309,63 @@ function App() {
           </div>
 
         </section>
+              {/* 7 Day Forecast */}
+        <section className="daily-section">
 
+          <h2>7-Day Forecast</h2>
+
+          <div className="daily-forecast">
+
+            {weather.daily.time.map((date, index) => {
+
+              const day = new Date(date).toLocaleDateString(
+                [],
+                { weekday: 'short' }
+              )
+
+              return (
+                <div className="daily-card" key={date}>
+
+                  <div className="daily-day">
+                    <p>{index === 0 ? 'Today' : day}</p>
+                  </div>
+
+                  <div className="daily-icon">
+                    <span>
+                      {getWeatherIcon(
+                        weather.daily.weather_code[index]
+                      )}
+                    </span>
+
+                    <small>
+                      {getWeatherCondition(
+                        weather.daily.weather_code[index]
+                      )}
+                    </small>
+                  </div>
+
+                  <div className="daily-temperature">
+                    <strong>
+                      {Math.round(
+                        weather.daily.temperature_2m_max[index]
+                      )}°
+                    </strong>
+
+                    <span>
+                      {Math.round(
+                        weather.daily.temperature_2m_min[index]
+                      )}°
+                    </span>
+                  </div>
+
+                </div>
+              )
+            })}
+
+          </div>
+
+        </section>
+        
       </main>
 
     </div>
