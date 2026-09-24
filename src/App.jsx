@@ -1,26 +1,68 @@
+import { useEffect, useState } from 'react'
+import { getWeather } from './services/weatherApi'
 import './App.css'
 
 function App() {
+  const [weather, setWeather] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
-  const weatherData = {
-    location: 'Kathua, Jammu & Kashmir',
-    temperature: 28,
-    feelsLike: 30,
-    condition: 'Partly Cloudy',
-    humidity: 54,
-    wind: 14,
-    uvIndex: 5,
-    visibility: 10,
+  useEffect(() => {
+    async function fetchWeather() {
+      try {
+        const data = await getWeather(32.3866, 75.5176)
+        setWeather(data)
+      } catch (error) {
+        setError(error.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchWeather()
+  }, [])
+
+  function getWeatherIcon(code) {
+    if (code === 0) return '☀️'
+    if (code <= 3) return '⛅'
+    if (code <= 48) return '🌫️'
+    if (code <= 67) return '🌧️'
+    if (code <= 77) return '❄️'
+    if (code <= 82) return '🌧️'
+    if (code <= 99) return '⛈️'
+
+    return '☁️'
   }
 
-  const hourlyForecast = [
-    { time: '12 PM', icon: '☀️', temperature: 28 },
-    { time: '1 PM', icon: '☀️', temperature: 29 },
-    { time: '2 PM', icon: '⛅', temperature: 30 },
-    { time: '3 PM', icon: '🌧️', temperature: 29 },
-    { time: '4 PM', icon: '🌧️', temperature: 27 },
-    { time: '5 PM', icon: '☁️', temperature: 26 },
-  ]
+  function getWeatherCondition(code) {
+    if (code === 0) return 'Clear Sky'
+    if (code <= 3) return 'Partly Cloudy'
+    if (code <= 48) return 'Foggy'
+    if (code <= 67) return 'Rainy'
+    if (code <= 77) return 'Snowy'
+    if (code <= 82) return 'Rain Showers'
+    if (code <= 99) return 'Thunderstorm'
+
+    return 'Cloudy'
+  }
+
+  if (loading) {
+    return (
+      <div className="loading">
+        Loading weather...
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="loading">
+        Error: {error}
+      </div>
+    )
+  }
+
+  const current = weather.current
 
   return (
     <div className="app">
@@ -66,21 +108,25 @@ function App() {
         {/* Current Weather */}
         <section className="current-weather">
           <div>
-            <p className="location">{weatherData.location}</p>
+            <p className="location">
+              Kathua, Jammu & Kashmir
+            </p>
 
-            <h2>{weatherData.temperature}°</h2>
+            <h2>
+              {Math.round(current.temperature_2m)}°
+            </h2>
 
             <p className="condition">
-              {weatherData.condition}
+              {getWeatherCondition(current.weather_code)}
             </p>
 
             <p>
-              Feels like {weatherData.feelsLike}°
+              Feels like {Math.round(current.apparent_temperature)}°
             </p>
           </div>
 
           <div className="weather-icon">
-            ☁️
+            {getWeatherIcon(current.weather_code)}
           </div>
         </section>
 
@@ -90,48 +136,74 @@ function App() {
           <div className="weather-card">
             <span>💧</span>
             <p>Humidity</p>
-            <h3>{weatherData.humidity}%</h3>
+            <h3>
+              {current.relative_humidity_2m}%
+            </h3>
           </div>
 
           <div className="weather-card">
             <span>💨</span>
             <p>Wind</p>
-            <h3>{weatherData.wind} km/h</h3>
+            <h3>
+              {Math.round(current.wind_speed_10m)} km/h
+            </h3>
           </div>
 
           <div className="weather-card">
-            <span>☀️</span>
-            <p>UV Index</p>
-            <h3>{weatherData.uvIndex}</h3>
+            <span>🌡️</span>
+            <p>Temperature</p>
+            <h3>
+              {Math.round(current.temperature_2m)}°C
+            </h3>
           </div>
 
           <div className="weather-card">
-            <span>👁️</span>
-            <p>Visibility</p>
-            <h3>{weatherData.visibility} km</h3>
+            <span>🌧️</span>
+            <p>Rain Probability</p>
+            <h3>
+              {weather.hourly.precipitation_probability[0]}%
+            </h3>
           </div>
 
         </section>
 
         {/* Hourly Forecast */}
         <section className="forecast-section">
+
           <h2>Hourly Forecast</h2>
 
           <div className="hourly">
 
-            {hourlyForecast.map((hour) => (
-              <div className="hour" key={hour.time}>
+            {weather.hourly.time.slice(0, 6).map((time, index) => {
 
-                <p>{hour.time}</p>
+              const hour = new Date(time).toLocaleTimeString([], {
+                hour: 'numeric',
+                hour12: true
+              })
 
-                <span>{hour.icon}</span>
+              return (
+                <div className="hour" key={time}>
 
-                <h3>{hour.temperature}°</h3>
+                  <p>{hour}</p>
 
-              </div>
-            ))}
+                  <span>
+                    {getWeatherIcon(
+                      weather.hourly.weather_code[index]
+                    )}
+                  </span>
+
+                  <h3>
+                    {Math.round(
+                      weather.hourly.temperature_2m[index]
+                    )}°
+                  </h3>
+
+                </div>
+              )
+            })}
 
           </div>
+
         </section>
 
       </main>
